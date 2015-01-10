@@ -53,6 +53,7 @@ class TW_Services_Plugin_Post_Type {
 		$this->plural = $plural;
 		$this->single = $single;
 		$this->description = $description;
+		$this->options = $options;
 
 		// Regsiter post type
 		add_action( 'init' , array( $this, 'register_post_type' ) );

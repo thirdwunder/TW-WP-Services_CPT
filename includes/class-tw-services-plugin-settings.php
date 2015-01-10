@@ -67,7 +67,7 @@ class TW_Services_Plugin_Settings {
 	 * @return void
 	 */
 	public function add_menu_item () {
-		$page = add_options_page( __( 'Plugin Settings', 'tw-services-plugin' ) , __( 'Plugin Settings', 'tw-services-plugin' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
+		$page = add_options_page( __( 'Plugin Settings', 'tw-services-plugin' ) , __( 'TW Services', 'tw-services-plugin' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
 		add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
 	}
 
@@ -108,112 +108,110 @@ class TW_Services_Plugin_Settings {
 	private function settings_fields () {
 
 		$settings['standard'] = array(
-			'title'					=> __( 'Standard', 'tw-services-plugin' ),
-			'description'			=> __( 'These are fairly standard form input fields.', 'tw-services-plugin' ),
+			'title'					=> __( 'Settings', 'tw-services-plugin' ),
+			'description'			=> __( 'Third Wunder Servicess plugin general settings.', 'tw-services-plugin' ),
 			'fields'				=> array(
-				array(
-					'id' 			=> 'text_field',
-					'label'			=> __( 'Some Text' , 'tw-services-plugin' ),
-					'description'	=> __( 'This is a standard text field.', 'tw-services-plugin' ),
-					'type'			=> 'text',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'tw-services-plugin' )
-				),
-				array(
-					'id' 			=> 'password_field',
-					'label'			=> __( 'A Password' , 'tw-services-plugin' ),
-					'description'	=> __( 'This is a standard password field.', 'tw-services-plugin' ),
-					'type'			=> 'password',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'tw-services-plugin' )
-				),
-				array(
-					'id' 			=> 'secret_text_field',
-					'label'			=> __( 'Some Secret Text' , 'tw-services-plugin' ),
-					'description'	=> __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'tw-services-plugin' ),
-					'type'			=> 'text_secret',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'tw-services-plugin' )
-				),
-				array(
-					'id' 			=> 'text_block',
-					'label'			=> __( 'A Text Block' , 'tw-services-plugin' ),
-					'description'	=> __( 'This is a standard text area.', 'tw-services-plugin' ),
-					'type'			=> 'textarea',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text for this textarea', 'tw-services-plugin' )
-				),
-				array(
-					'id' 			=> 'single_checkbox',
-					'label'			=> __( 'An Option', 'tw-services-plugin' ),
-					'description'	=> __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'tw-services-plugin' ),
+  			array(
+					'id' 			=> 'tw_service_category',
+					'label'			=> __( 'Categories', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable Service categories', 'tw-services-plugin' ),
 					'type'			=> 'checkbox',
 					'default'		=> ''
 				),
 				array(
-					'id' 			=> 'select_box',
-					'label'			=> __( 'A Select Box', 'tw-services-plugin' ),
-					'description'	=> __( 'A standard select box.', 'tw-services-plugin' ),
-					'type'			=> 'select',
-					'options'		=> array( 'drupal' => 'Drupal', 'joomla' => 'Joomla', 'wordpress' => 'WordPress' ),
-					'default'		=> 'wordpress'
+					'id' 			=> 'tw_service_tag',
+					'label'			=> __( 'Tags', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable Service tags', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> ''
 				),
-				array(
-					'id' 			=> 'radio_buttons',
-					'label'			=> __( 'Some Options', 'tw-services-plugin' ),
-					'description'	=> __( 'A standard set of radio buttons.', 'tw-services-plugin' ),
-					'type'			=> 'radio',
-					'options'		=> array( 'superman' => 'Superman', 'batman' => 'Batman', 'ironman' => 'Iron Man' ),
-					'default'		=> 'batman'
-				),
-				array(
-					'id' 			=> 'multiple_checkboxes',
-					'label'			=> __( 'Some Items', 'tw-services-plugin' ),
-					'description'	=> __( 'You can select multiple items and they will be stored as an array.', 'tw-services-plugin' ),
-					'type'			=> 'checkbox_multi',
-					'options'		=> array( 'square' => 'Square', 'circle' => 'Circle', 'rectangle' => 'Rectangle', 'triangle' => 'Triangle' ),
-					'default'		=> array( 'circle', 'triangle' )
-				)
 			)
 		);
 
-		$settings['extra'] = array(
-			'title'					=> __( 'Extra', 'tw-services-plugin' ),
-			'description'			=> __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'tw-services-plugin' ),
+    $relationships = 0;
+    $client = false;
+    $testimonials = false;
+    $projects = false;
+    if( is_plugin_active( 'tw-testimonials-plugin/tw-testimonials-plugin.php' ) ){
+      $relationships++;
+      $testimonials = true;
+    }
+    if( is_plugin_active( 'tw-clients-plugin/tw-clients-plugin.php' ) ){
+      $relationships++;
+      $client = true;
+    }
+    if( is_plugin_active( 'tw-projects-plugin/tw-projects-plugin.php' ) ){
+      $relationships++;
+      $projects = true;
+    }
+    if($relationships>0){
+
+      $settings['relationships'] = array(
+  			'title'					=> __( 'Relationships', 'tw-services-plugin' ),
+  			'description'			=> __( 'Relationship options for other Third Wunder plugins', 'tw-services-plugin' ),
+  			'fields'				=> array()
+  		);
+
+      if($client){
+        $settings['relationships']['fields'][] = array(
+					'id' 			=> 'tw_service_clients',
+					'label'			=> __( 'Clients', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable Service Clients', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> ''
+				);
+  		}
+
+  		if($testimonials){
+        $settings['relationships']['fields'][] = array(
+					'id' 			=> 'tw_service_testimonials',
+					'label'			=> __( 'Testimonials', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable Service Testimonials', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> ''
+				);
+  		}
+  		if($projects){
+        $settings['relationships']['fields'][] = array(
+					'id' 			=> 'tw_service_projects',
+					'label'			=> __( 'Projects', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable Service Projects', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> ''
+				);
+  		}
+
+    }
+
+    $settings['advanced'] = array(
+			'title'					=> __( 'Advanced', 'tw-services-plugin' ),
+			'description'			=> __( 'Third Wunder Services plugin advanced settings.', 'tw-services-plugin' ),
 			'fields'				=> array(
 				array(
-					'id' 			=> 'number_field',
-					'label'			=> __( 'A Number' , 'tw-services-plugin' ),
-					'description'	=> __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'tw-services-plugin' ),
-					'type'			=> 'number',
-					'default'		=> '',
-					'placeholder'	=> __( '42', 'tw-services-plugin' )
+					'id' 			=> 'tw_service_slug',
+					'label'			=> __( 'Slug', 'tw-services-plugin' ),
+					'description'	=> __( 'Services custom post type slug', 'tw-services-plugin' ),
+					'type'			=> 'text',
+					'default'		=> 'service',
+					'placeholder' => 'service',
 				),
 				array(
-					'id' 			=> 'colour_picker',
-					'label'			=> __( 'Pick a colour', 'tw-services-plugin' ),
-					'description'	=> __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'tw-services-plugin' ),
-					'type'			=> 'color',
-					'default'		=> '#21759B'
+					'id' 			=> 'tw_service_search',
+					'label'			=> __( 'Exclude from Search', 'tw-services-plugin' ),
+					'description'	=> __( 'Hide Service items from search results', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> ''
 				),
 				array(
-					'id' 			=> 'an_image',
-					'label'			=> __( 'An Image' , 'tw-services-plugin' ),
-					'description'	=> __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'tw-services-plugin' ),
-					'type'			=> 'image',
-					'default'		=> '',
-					'placeholder'	=> ''
+					'id' 			=> 'tw_service_archive',
+					'label'			=> __( 'Has Archive', 'tw-services-plugin' ),
+					'description'	=> __( 'Enable an archive page for Services custom post type', 'tw-services-plugin' ),
+					'type'			=> 'checkbox',
+					'default'		=> 'on'
 				),
-				array(
-					'id' 			=> 'multi_select_box',
-					'label'			=> __( 'A Multi-Select Box', 'tw-services-plugin' ),
-					'description'	=> __( 'A standard multi-select box - the saved data is stored as an array.', 'tw-services-plugin' ),
-					'type'			=> 'select_multi',
-					'options'		=> array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
-					'default'		=> array( 'linux' )
-				)
 			)
 		);
+
 
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
@@ -278,7 +276,7 @@ class TW_Services_Plugin_Settings {
 
 		// Build page HTML
 		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'Plugin Settings' , 'tw-services-plugin' ) . '</h2>' . "\n";
+			$html .= '<h2>' . __( 'Third Wunder Services Plugin' , 'tw-services-plugin' ) . '</h2>' . "\n";
 
 			$tab = '';
 			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
