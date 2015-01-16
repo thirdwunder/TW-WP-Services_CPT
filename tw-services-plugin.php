@@ -24,6 +24,7 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 // Load plugin class files
 require_once( 'includes/class-tw-services-plugin.php' );
 require_once( 'includes/class-tw-services-plugin-settings.php' );
+require_once( 'includes/class-tw-services-widgets.php' );
 
 // Load plugin libraries
 require_once( 'includes/lib/class-tw-services-plugin-admin-api.php' );
@@ -32,6 +33,9 @@ require_once( 'includes/lib/class-tw-services-plugin-taxonomy.php' );
 
 if(!class_exists('AT_Meta_Box')){
   require_once("includes/My-Meta-Box/meta-box-class/my-meta-box-class.php");
+}
+if(!class_exists('Tax_Meta_Class')){
+  require_once("includes/Tax-Meta-Class/Tax-meta-class/Tax-meta-class.php");
 }
 
 /**
@@ -58,7 +62,7 @@ $service_search = get_option('wpt_tw_service_search') ? true : false;
 $service_archive = get_option('wpt_tw_service_archive') ? true : false;
 
 $service_category = (get_option('wpt_tw_service_category')=='on') ? true : false;
-$project_tag      = (get_option('wpt_tw_service_tag')=='on') ? true : false;
+$service_tag      = (get_option('wpt_tw_service_tag')=='on') ? true : false;
 
 $service_testimonials  = (get_option('wpt_tw_service_testimonials')=='on') ? true : false;
 $service_clients       = (get_option('wpt_tw_service_clients')=='on')      ? true : false;
@@ -76,11 +80,11 @@ TW_Services_Plugin()->register_post_type(
                           'has_archive'     => $service_archive,
                         )
                     );
-if($project_category){
+if($service_category){
   TW_Services_Plugin()->register_taxonomy( 'tw_service_category', __( 'Service Categories', 'tw-services-plugin' ), __( 'Service Category', 'tw' ), 'tw_service', array('hierarchical'=>true) );
 }
 
-if($project_tag){
+if($service_tag){
  TW_Services_Plugin()->register_taxonomy( 'tw_service_tag', __( 'Service Tags', 'tw-services-plugin' ), __( 'Service Tag', 'tw-services-plugin' ), 'tw_service', array('hierarchical'=>false) );
 }
 
@@ -111,7 +115,26 @@ if (is_admin()){
     $service_meta->addPosts('tw_service_projects',array('post_type' => 'tw_project', 'type'=>'checkbox_list'),array('name'=> 'Projects'));
   }
 
-
   $service_meta->Finish();
+
+
+
+  if($service_category){
+    $service_cat_config = array(
+      'id' => 'service_cat_meta_box',
+      'title' => 'Service Category',
+      'pages' => array('tw_service_category'),
+      'context' => 'normal',
+      'fields' => array(),
+      'local_images' => false,
+      'use_with_theme' => false,
+    );
+    $service_cat_meta =  new Tax_Meta_Class($service_cat_config);
+    $service_cat_meta->addText($prefix.'order',array('name'=> __('Order ','tw-services-plugin'),'desc' => 'The numerical order to sort by'));
+    $service_cat_meta->addText($prefix.'icon',array('name'=> __('Icon ','tw-services-plugin'),'desc' => 'Fontawesome or Glyphcon icon class'));
+    $service_cat_meta->addImage($prefix.'image',array('name'=> __('Image','tw-services-plugin')));
+    $service_cat_meta->Finish();
+
+  }
 
 }
